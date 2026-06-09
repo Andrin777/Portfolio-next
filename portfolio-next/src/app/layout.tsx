@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
-import { SiteNav } from "@/components/SiteNav";
 import { LanguageProvider } from "@/lib/locale";
 import { sanityFetch } from "@/sanity/fetch";
 import { siteSettingsQuery } from "@/sanity/queries";
@@ -27,12 +26,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <LanguageProvider defaultLang="en">
-          <SiteNav />
-          {children}
-        </LanguageProvider>
+    <html lang="en" data-theme="dark" data-lang="en" suppressHydrationWarning>
+      <body className={inter.className} data-theme="dark" data-lang="en" suppressHydrationWarning>
+        <LanguageProvider defaultLang="en">{children}</LanguageProvider>
       </body>
     </html>
   );

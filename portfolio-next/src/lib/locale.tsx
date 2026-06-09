@@ -27,15 +27,22 @@ export function LanguageProvider({
 }) {
   const [lang, setLang] = useState<Lang>(defaultLang);
 
-  // Restore the visitor's choice on mount.
+  // Restore the visitor's choice on mount (new key, fall back to legacy key).
   useEffect(() => {
-    const stored = window.localStorage.getItem("lang") as Lang | null;
+    const stored = (window.localStorage.getItem("lang") ||
+      window.localStorage.getItem("aa-lang")) as Lang | null;
     if (stored === "en" || stored === "de") setLang(stored);
   }, []);
 
   useEffect(() => {
     window.localStorage.setItem("lang", lang);
+    // Persist under the legacy key too, matching the old portfolio.
+    window.localStorage.setItem("aa-lang", lang);
     document.documentElement.lang = lang;
+    // Mirror onto a data attribute so the old CSS span-toggle mechanism
+    // ([data-lang="en"] [data-de] { display:none }) keeps working.
+    document.documentElement.dataset.lang = lang;
+    document.body.dataset.lang = lang;
   }, [lang]);
 
   return (

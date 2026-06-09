@@ -7,21 +7,23 @@ import type { Lang, Locale, MediaBlock } from "@/lib/types";
 function BlockHead({
   eyebrow,
   heading,
+  intro,
   lang,
 }: {
   eyebrow?: Locale;
   heading?: Locale;
+  intro?: Locale;
   lang: Lang;
 }) {
   const eb = loc(eyebrow, lang);
   const hd = loc(heading, lang);
-  if (!eb && !hd) return null;
+  const in_ = loc(intro, lang);
+  if (!eb && !hd && !in_) return null;
   return (
-    <div style={{ marginBottom: 18 }}>
+    <div className="proj-media-sector-head" style={{ marginBottom: 18 }}>
       {eb && <p className="eyebrow">{eb}</p>}
-      {hd && (
-        <h3 style={{ fontSize: "clamp(20px,3vw,30px)", margin: 0 }}>{hd}</h3>
-      )}
+      {hd && <h3>{hd}</h3>}
+      {in_ && <p>{in_}</p>}
     </div>
   );
 }
@@ -35,26 +37,29 @@ export function MediaBlocks({ blocks }: { blocks?: MediaBlock[] }) {
       {blocks.map((block) => {
         if (block._type === "mediaGallery") {
           return (
-            <div className="media-block" key={block._key}>
-              <BlockHead eyebrow={block.eyebrow} heading={block.heading} lang={lang} />
-              {block.intro && (
-                <p className="muted" style={{ maxWidth: "60ch", marginBottom: 18 }}>
-                  {loc(block.intro, lang)}
-                </p>
-              )}
-              <div className="media-gallery-grid">
+            <div key={block._key} style={{ marginTop: 32 }}>
+              <BlockHead
+                eyebrow={block.eyebrow}
+                heading={block.heading}
+                intro={block.intro}
+                lang={lang}
+              />
+              <div className="proj-media-grid" style={{ marginTop: 0 }}>
                 {block.images?.map((img, i) => {
                   const fit = img.fit || block.fit || "cover";
                   return (
-                    <div className={`item ${fit}`} key={i}>
+                    <figure
+                      className={`proj-media-figure${fit === "contain" ? " is-contain" : ""}`}
+                      key={i}
+                    >
                       {img.image?.url && (
                         <img
-                          src={imgUrl(img.image.url, 900)}
+                          src={imgUrl(img.image.url, 1400)}
                           alt={loc(img.caption, lang) || ""}
                           loading="lazy"
                         />
                       )}
-                    </div>
+                    </figure>
                   );
                 })}
               </div>
@@ -64,39 +69,64 @@ export function MediaBlocks({ blocks }: { blocks?: MediaBlock[] }) {
 
         if (block._type === "mediaVideo") {
           return (
-            <div className="media-block media-video" key={block._key}>
-              <BlockHead eyebrow={block.eyebrow} heading={block.heading} lang={lang} />
+            <div key={block._key} style={{ marginTop: 32 }}>
+              <BlockHead
+                eyebrow={block.eyebrow}
+                heading={block.heading}
+                lang={lang}
+              />
               {block.videoUrl && (
-                <video
-                  src={block.videoUrl}
-                  poster={imgUrl(block.poster?.url, 1200) || undefined}
-                  controls={!block.loop}
-                  autoPlay={block.loop}
-                  muted={block.loop}
-                  loop={block.loop}
-                  playsInline
-                />
+                <figure className="proj-media-video" style={{ marginTop: 0 }}>
+                  <video
+                    src={block.videoUrl}
+                    poster={imgUrl(block.poster?.url, 1400) || undefined}
+                    controls={!block.loop}
+                    autoPlay={block.loop}
+                    muted={block.loop}
+                    loop={block.loop}
+                    playsInline
+                    preload={block.loop ? "auto" : "none"}
+                  />
+                </figure>
               )}
             </div>
           );
         }
 
         if (block._type === "mediaEmbed") {
+          const eb = loc(block.eyebrow, lang);
+          const hd = loc(block.heading, lang);
+          const hint = loc(block.hint, lang);
           return (
-            <div className="media-block media-embed" key={block._key}>
-              <BlockHead eyebrow={block.eyebrow} heading={block.heading} lang={lang} />
-              {block.hint && (
-                <p className="muted" style={{ maxWidth: "60ch", marginBottom: 14 }}>
-                  {loc(block.hint, lang)}
-                </p>
+            <div className="proj-media-web" key={block._key}>
+              {(eb || hd || hint) && (
+                <div className="head">
+                  <div>
+                    {eb && <p className="eyebrow">{eb}</p>}
+                    {hd && <h2>{hd}</h2>}
+                  </div>
+                  {hint && <p className="hint">{hint}</p>}
+                </div>
               )}
               {block.url && (
-                <iframe
-                  src={block.url}
-                  loading="lazy"
-                  style={{ aspectRatio: block.aspectRatio || "16/9" }}
-                  allowFullScreen
-                />
+                <div
+                  className="proj-media-web-frame"
+                  style={{ aspectRatio: block.aspectRatio || "16 / 10" }}
+                >
+                  <iframe
+                    src={block.url}
+                    loading="lazy"
+                    allow="fullscreen"
+                    title={hd || "Embedded media"}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      border: 0,
+                    }}
+                  />
+                </div>
               )}
             </div>
           );
