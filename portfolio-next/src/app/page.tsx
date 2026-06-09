@@ -1,0 +1,21 @@
+import { HomeView } from "@/components/HomeView";
+import { sanityFetch } from "@/sanity/fetch";
+import {
+  projectsListQuery,
+  siteSettingsQuery,
+  stackQuery,
+} from "@/sanity/queries";
+import type { ProjectListItem, SiteSettings, StackItem } from "@/lib/types";
+
+// Revalidate the home page every 60s (ISR) so CMS edits show up.
+export const revalidate = 60;
+
+export default async function HomePage() {
+  const [settings, projects, stack] = await Promise.all([
+    sanityFetch<SiteSettings>(siteSettingsQuery, null),
+    sanityFetch<ProjectListItem[]>(projectsListQuery, []),
+    sanityFetch<StackItem[]>(stackQuery, []),
+  ]);
+
+  return <HomeView settings={settings} projects={projects} stack={stack} />;
+}

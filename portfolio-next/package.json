@@ -1,0 +1,32 @@
+{
+  "name": "portfolio-next",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typegen": "sanity schema extract && sanity typegen generate",
+    "import": "node scripts/import-content.mjs"
+  },
+  "dependencies": {
+    "@sanity/image-url": "^1.1.0",
+    "@sanity/vision": "^3.99.0",
+    "next": "^15.3.0",
+    "next-sanity": "^9.12.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "sanity": "^3.99.0",
+    "styled-components": "^6.1.13"
+  },
+  "devDependencies": {
+    "@sanity/client": "^6.27.0",
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "dotenv": "^16.4.7",
+    "typescript": "^5.7.0"
+  }
+}
