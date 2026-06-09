@@ -9,14 +9,21 @@ out/
 .env.local
 .env*.local
 *.tsbuildinfo
-Digital Making/web/kampf.MOV.mov
-physical computing/web/ENDLESS_WISHLIST.mp4
-physical computing/web/ENDLESS_WISHLIST-web.mp4
-no water no tomorrow/web/NO_WATER-NO_TOMORROW-1080.mp4
-Drohnenaufnahmen/web/DJI_0033-1080.mp4
-Drohnenaufnahmen/web/DJI_0035-1080.mp4
-Drohnenaufnahmen/web/DJI_0037-1080.mp4
-Drohnenaufnahmen/web/drohnen-scroll-scrub-1080-web.mp4
-von 2D zu 3D/web/bike/animation-4k.mp4
-reactive-signs/reactive-signs-2-loop.mp4
-Digital Making/web/prototypes/Prototypes1.png
+
+# Schulprojekt-Ordner (nicht Teil des Next.js Deploys)
+Digital Making/
+Drohnenaufnahmen/
+dynamik/
+fonts/
+no water no tomorrow/
+physical computing/
+reactive-signs/
+scripts/
+upcycling/
+von 2D zu 3D/
+zoom/
+favicon.svg
+portfolio_V10.html
+package.json
+NETLIFY_DEPLOY.md
+SANITY_CONTENT.md
