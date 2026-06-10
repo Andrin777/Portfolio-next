@@ -11,6 +11,7 @@ export type GalleryImage = {
   fit?: "cover" | "contain";
   isWide?: boolean;
   caption?: Locale;
+  alt?: Locale;
   image?: SanityImage;
 };
 
@@ -21,6 +22,7 @@ export type SectorMediaItem =
       isWide?: boolean;
       fit?: "cover" | "contain";
       caption?: Locale;
+      alt?: Locale;
       image?: SanityImage;
     }
   | {
@@ -28,6 +30,7 @@ export type SectorMediaItem =
       _key: string;
       isWide?: boolean;
       caption?: Locale;
+      alt?: Locale;
       videoUrl?: string;
       poster?: SanityImage;
     };

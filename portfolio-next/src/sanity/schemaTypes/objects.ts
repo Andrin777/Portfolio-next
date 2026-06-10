@@ -43,6 +43,13 @@ export const galleryImage = defineType({
     }),
     defineField({ name: "caption", title: "Caption", type: "localeString" }),
     defineField({
+      name: "alt",
+      title: "Alt text",
+      type: "localeString",
+      description:
+        "Describe the image for screen readers. Falls back to the caption if left empty.",
+    }),
+    defineField({
       name: "isWide",
       title: "Full width in sector grid",
       type: "boolean",
@@ -77,6 +84,13 @@ export const sectorVideo = defineType({
       options: { hotspot: true },
     }),
     defineField({ name: "caption", title: "Caption", type: "localeString" }),
+    defineField({
+      name: "alt",
+      title: "Alt text (poster)",
+      type: "localeString",
+      description:
+        "Describe the poster image for screen readers. Falls back to the caption if left empty.",
+    }),
     defineField({
       name: "isWide",
       title: "Full width in sector grid",

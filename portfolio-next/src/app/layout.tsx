@@ -30,6 +30,9 @@ export default function RootLayout({
     <html lang="en" data-theme="dark" data-lang="en" suppressHydrationWarning>
       <body className={inter.className} data-theme="dark" data-lang="en" suppressHydrationWarning>
         <LanguageProvider defaultLang="en">
+          <a className="skip-link" href="#main">
+            Skip to content
+          </a>
           {children}
           <CursorDot />
         </LanguageProvider>

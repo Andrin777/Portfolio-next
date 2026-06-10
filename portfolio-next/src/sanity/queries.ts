@@ -13,6 +13,7 @@ const galleryImageFields = `{
   fit,
   isWide,
   caption ${localeFields},
+  alt ${localeFields},
   "image": image ${imageFields}
 }`;
 
@@ -21,10 +22,12 @@ const sectorMediaFields = `{
   _type == "galleryImage" => {
     fit,
     caption ${localeFields},
+    alt ${localeFields},
     "image": image ${imageFields}
   },
   _type == "sectorVideo" => {
     caption ${localeFields},
+    alt ${localeFields},
     "videoUrl": video.asset->url,
     "poster": poster ${imageFields}
   }

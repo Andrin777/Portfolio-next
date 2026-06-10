@@ -1,6 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent as ReactKeyboardEvent,
+} from "react";
 
 import { imgUrl } from "@/lib/img";
 import { loc, useLang } from "@/lib/locale";
@@ -110,31 +116,62 @@ function Lightbox({
   content,
   onClose,
   closeLabel,
+  dialogLabel,
 }: {
   content: LightboxContent;
   onClose: () => void;
   closeLabel: string;
+  dialogLabel: string;
 }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
     document.body.classList.add("media-lightbox-open");
+    // Remember what was focused so we can restore it when the dialog closes.
+    const opener = document.activeElement as HTMLElement | null;
+    closeBtnRef.current?.focus();
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (e.key !== "Tab") return;
+      // Keep Tab focus inside the dialog.
+      const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(
+        'button, [href], input, video, [tabindex]:not([tabindex="-1"])',
+      );
+      if (!focusable || focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     document.addEventListener("keydown", onKey);
     return () => {
       document.body.classList.remove("media-lightbox-open");
       document.removeEventListener("keydown", onKey);
+      opener?.focus();
     };
   }, [onClose]);
 
   return (
     <div
+      ref={dialogRef}
       className="media-lightbox"
       role="dialog"
       aria-modal="true"
+      aria-label={dialogLabel}
       onClick={onClose}
     >
       <button
+        ref={closeBtnRef}
         type="button"
         className="media-lightbox-close"
         aria-label={closeLabel}
@@ -190,12 +227,35 @@ function GalleryCarousel({
   const current = images[index];
   const fit = current.fit || defaultFit || "cover";
   const src = imgUrl(current.image?.url, 1600);
-  const alt = loc(current.caption, lang) || "";
+  const alt =
+    loc(current.alt, lang) ||
+    loc(current.caption, lang) ||
+    t("Project image", "Projektbild");
 
   return (
     <figure
       className={`proj-media-carousel-frame${fit === "contain" ? " is-contain" : ""}`}
       style={{ marginTop: 0 }}
+      {...(total > 1
+        ? {
+            tabIndex: 0,
+            role: "group",
+            "aria-roledescription": t("carousel", "Karussell"),
+            "aria-label": t(
+              `Image gallery, ${total} images`,
+              `Bildergalerie, ${total} Bilder`,
+            ),
+            onKeyDown: (e: ReactKeyboardEvent) => {
+              if (e.key === "ArrowLeft") {
+                e.preventDefault();
+                go(-1);
+              } else if (e.key === "ArrowRight") {
+                e.preventDefault();
+                go(1);
+              }
+            },
+          }
+        : {})}
     >
       {src && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -219,7 +279,14 @@ function GalleryCarousel({
 
       {total > 1 && (
         <>
-          <span className="proj-media-carousel-count">
+          <span
+            className="proj-media-carousel-count"
+            aria-live="polite"
+            aria-label={t(
+              `Image ${index + 1} of ${total}`,
+              `Bild ${index + 1} von ${total}`,
+            )}
+          >
             {index + 1} / {total}
           </span>
           <div className="proj-media-carousel-controls">
@@ -328,6 +395,10 @@ function SectorBlock({
               const wide = item.isWide || (!anyWide && i === 0);
               const cls = wide ? " is-wide" : "";
               const caption = loc(item.caption, lang) || "";
+              const mediaAlt =
+                loc(item.alt, lang) ||
+                caption ||
+                t("Project image", "Projektbild");
 
               if (item._type === "sectorVideo") {
                 const poster = imgUrl(item.poster?.url, 1400) || undefined;
@@ -372,10 +443,10 @@ function SectorBlock({
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={src}
-                    alt={caption}
+                    alt={mediaAlt}
                     loading="lazy"
                     onClick={() =>
-                      onOpenLightbox({ kind: "image", src, alt: caption })
+                      onOpenLightbox({ kind: "image", src, alt: mediaAlt })
                     }
                     style={{ cursor: "zoom-in" }}
                   />
@@ -506,6 +577,7 @@ export function MediaBlocks({ blocks }: { blocks?: MediaBlock[] }) {
           content={lightbox}
           onClose={closeLightbox}
           closeLabel={lang === "de" ? "Schließen" : "Close"}
+          dialogLabel={lang === "de" ? "Medienansicht" : "Media viewer"}
         />
       )}
     </>

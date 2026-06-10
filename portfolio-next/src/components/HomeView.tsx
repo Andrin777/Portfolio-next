@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { imgUrl } from "@/lib/img";
 import { initHomeInteractions } from "@/lib/homeInteractions";
@@ -73,6 +73,23 @@ export function HomeView({
     const cleanup = initHomeInteractions();
     return cleanup;
   }, []);
+
+  /* ── Mobile menu: focus the first link on open, restore + Escape ───── */
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const menuPanelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    menuPanelRef.current?.querySelector("a")?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMenuOpen(false);
+        menuBtnRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
 
   /* ── Filter options derived from the project list ──────────────────── */
   const years = useMemo(
@@ -176,16 +193,23 @@ export function HomeView({
               {theme === "dark" ? <SunIcon /> : <MoonIcon />}
             </button>
             <button
+              ref={menuBtnRef}
               className="icon-btn"
               onClick={() => setMenuOpen((o) => !o)}
-              aria-label="Toggle menu"
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
             >
               {menuOpen ? <CloseIcon /> : <MenuIcon />}
             </button>
           </div>
         </div>
 
-        <div className={`menu-mobile${menuOpen ? " open" : ""}`}>
+        <div
+          ref={menuPanelRef}
+          id="mobile-menu"
+          className={`menu-mobile${menuOpen ? " open" : ""}`}
+        >
           <a className="link" href="#work" onClick={() => setMenuOpen(false)}>
             {t("Work", "Arbeiten")}
           </a>
@@ -202,6 +226,7 @@ export function HomeView({
         </div>
       </nav>
 
+      <main id="main">
       {/* ── NAME INTRO ────────────────────────────────────────────────── */}
       <section className="name-intro" id="nameIntro" aria-label="Andrin">
         <canvas
@@ -775,6 +800,7 @@ export function HomeView({
           </div>
         )}
       </section>
+      </main>
 
       {/* ── FOOTER ────────────────────────────────────────────────────── */}
       <footer className="footer px">

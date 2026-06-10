@@ -37,7 +37,7 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
   const hasMedia = hasMediaHead || (project.mediaBlocks?.length ?? 0) > 0;
 
   return (
-    <div className="shell project-page-route">
+    <main className="shell project-page-route" id="main">
       <div className="px">
         <Link className="proj-back" href="/#work">
           <svg
@@ -81,8 +81,19 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
 
       {/* ── Cover ─────────────────────────────────────────────────────── */}
       <section className="px">
-        <div className="proj-cover" style={{ background: coverBg }}>
-          <span className="cover-num">{num}</span>
+        <div
+          className="proj-cover"
+          style={{ background: coverBg }}
+          role="img"
+          aria-label={
+            coverUrl
+              ? t(`Cover image — ${project.title}`, `Titelbild — ${project.title}`)
+              : undefined
+          }
+        >
+          <span className="cover-num" aria-hidden="true">
+            {num}
+          </span>
         </div>
       </section>
 
@@ -167,6 +178,6 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
           </div>
         </section>
       )}
-    </div>
+    </main>
   );
 }
