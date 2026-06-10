@@ -19,6 +19,7 @@ DOKU.md
 
 # sanity
 /dist
+.sanity/
 sanity.types.ts
 schema.json
 
