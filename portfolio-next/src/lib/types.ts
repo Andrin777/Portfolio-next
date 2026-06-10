@@ -9,11 +9,38 @@ export type SanityImage = {
 
 export type GalleryImage = {
   fit?: "cover" | "contain";
+  isWide?: boolean;
   caption?: Locale;
   image?: SanityImage;
 };
 
+export type SectorMediaItem =
+  | {
+      _type: "galleryImage";
+      _key: string;
+      isWide?: boolean;
+      fit?: "cover" | "contain";
+      caption?: Locale;
+      image?: SanityImage;
+    }
+  | {
+      _type: "sectorVideo";
+      _key: string;
+      isWide?: boolean;
+      caption?: Locale;
+      videoUrl?: string;
+      poster?: SanityImage;
+    };
+
 export type MediaBlock =
+  | {
+      _type: "mediaSector";
+      _key: string;
+      eyebrow?: Locale;
+      heading?: Locale;
+      brief?: Locale;
+      media?: SectorMediaItem[];
+    }
   | {
       _type: "mediaGallery";
       _key: string;

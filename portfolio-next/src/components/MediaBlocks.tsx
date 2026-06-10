@@ -4,7 +4,13 @@ import { useCallback, useEffect, useState } from "react";
 
 import { imgUrl } from "@/lib/img";
 import { loc, useLang } from "@/lib/locale";
-import type { GalleryImage, Lang, Locale, MediaBlock } from "@/lib/types";
+import type {
+  GalleryImage,
+  Lang,
+  Locale,
+  MediaBlock,
+  SectorMediaItem,
+} from "@/lib/types";
 
 /* ── Icons ─────────────────────────────────────────────────────────────── */
 
@@ -281,6 +287,118 @@ function VideoBlock({
   );
 }
 
+/* ── Editorial sector (text left, media grid right) ────────────────────── */
+
+function SectorBlock({
+  block,
+  lang,
+  onOpenLightbox,
+}: {
+  block: Extract<MediaBlock, { _type: "mediaSector" }>;
+  lang: Lang;
+  onOpenLightbox: (content: LightboxContent) => void;
+}) {
+  const t = (en: string, de: string) => (lang === "de" ? de : en);
+  const eyebrow = loc(block.eyebrow, lang);
+  const heading = loc(block.heading, lang);
+  const brief = loc(block.brief, lang);
+  const media = (block.media ?? []).filter(
+    (m): m is SectorMediaItem =>
+      (m._type === "galleryImage" && !!m.image?.url) ||
+      (m._type === "sectorVideo" && !!m.videoUrl),
+  );
+
+  if (!media.length && !eyebrow && !heading && !brief) return null;
+
+  // Faithful to the legacy layout: the first item spans both columns unless
+  // any item is explicitly flagged wide.
+  const anyWide = media.some((m) => m.isWide);
+
+  return (
+    <section className="proj-media-sector">
+      <div className="proj-media-sector-head">
+        {eyebrow && <p className="eyebrow">{eyebrow}</p>}
+        {heading && <h3>{heading}</h3>}
+        {brief && <p>{brief}</p>}
+      </div>
+      <div className="proj-media-sector-content">
+        {media.length > 0 && (
+          <div className="proj-media-sector-media">
+            {media.map((item, i) => {
+              const wide = item.isWide || (!anyWide && i === 0);
+              const cls = wide ? " is-wide" : "";
+              const caption = loc(item.caption, lang) || "";
+
+              if (item._type === "sectorVideo") {
+                const poster = imgUrl(item.poster?.url, 1400) || undefined;
+                return (
+                  <figure
+                    key={item._key}
+                    className={`proj-media-sector-video${cls}`}
+                  >
+                    <video
+                      src={item.videoUrl}
+                      poster={poster}
+                      controls
+                      muted
+                      playsInline
+                      preload="none"
+                      title={caption || undefined}
+                    />
+                    <button
+                      type="button"
+                      className="media-expand-btn"
+                      aria-label={t("Enlarge video", "Video vergrößern")}
+                      onClick={() =>
+                        onOpenLightbox({
+                          kind: "video",
+                          src: item.videoUrl!,
+                          poster,
+                        })
+                      }
+                    >
+                      <ExpandIcon />
+                    </button>
+                  </figure>
+                );
+              }
+
+              const src = imgUrl(item.image?.url, 1600);
+              return (
+                <figure
+                  key={item._key}
+                  className={`proj-media-sector-figure${cls}`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={src}
+                    alt={caption}
+                    loading="lazy"
+                    onClick={() =>
+                      onOpenLightbox({ kind: "image", src, alt: caption })
+                    }
+                    style={{ cursor: "zoom-in" }}
+                  />
+                  <button
+                    type="button"
+                    className="media-expand-btn"
+                    aria-label={t("Enlarge image", "Bild vergrößern")}
+                    onClick={() =>
+                      onOpenLightbox({ kind: "image", src, alt: caption })
+                    }
+                  >
+                    <ExpandIcon />
+                  </button>
+                </figure>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 /* ── Container ─────────────────────────────────────────────────────────── */
 
 export function MediaBlocks({ blocks }: { blocks?: MediaBlock[] }) {
@@ -293,6 +411,17 @@ export function MediaBlocks({ blocks }: { blocks?: MediaBlock[] }) {
   return (
     <>
       {blocks.map((block) => {
+        if (block._type === "mediaSector") {
+          return (
+            <SectorBlock
+              key={block._key}
+              block={block}
+              lang={lang}
+              onOpenLightbox={setLightbox}
+            />
+          );
+        }
+
         if (block._type === "mediaGallery") {
           if (!block.images?.length) return null;
           return (

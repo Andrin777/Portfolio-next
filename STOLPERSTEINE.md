@@ -169,3 +169,92 @@ rm -rf .next && npm run dev
 ```
 
 **Wichtig:** `npm run dev` und `npm run build` **nicht gleichzeitig** laufen lassen.
+
+---
+
+## 10. CSS `url("fonts/...")` findet Schriften nicht in Next.js
+
+**Problem:** Die aus dem alten Portfolio übernommene CSS enthielt `@font-face`-Deklarationen mit relativen Pfaden:
+```css
+url("fonts/ITC Century Std Light.otf")
+```
+Next.js Webpack löst `url()`-Angaben in CSS-Dateien **relativ zur CSS-Datei** auf (nicht zum `public/`-Ordner). Die `.otf`-Dateien lagen aber nicht unter `src/app/fonts/`, sondern im Projektroot unter `fonts/` — der Build schlug deshalb lautlos fehl.
+
+**Lösung:**
+1. Schriftdateien in `portfolio-next/public/fonts/` kopieren (damit Next.js sie als statische Assets ausliefert).
+2. CSS-Pfade auf root-relative URLs umstellen:
+```css
+url("/fonts/ITC Century Std Light.otf")
+```
+Mit führendem `/` sucht der Browser immer relativ zum Domain-Root — unabhängig vom Pfad der CSS-Datei.
+
+---
+
+## 11. Eigener Cursor auf Unterseiten unsichtbar
+
+**Problem:** Das globale CSS setzt `cursor: none !important` auf allen `pointer:fine`-Geräten. Der JavaScript-Code für den Custom-Cursor-Dot lebte aber nur auf der Startseite (`HomeView`). Auf Projekt-Detailseiten (`/work/...`) war dadurch **gar kein Cursor sichtbar**.
+
+**Lösung:** Cursor-Dot-Komponente in das Root-Layout (`layout.tsx`) verschieben, damit sie auf jeder Seite existiert:
+
+```tsx
+// layout.tsx
+import { CursorDot } from "@/components/CursorDot";
+
+<LanguageProvider>
+  {children}
+  <CursorDot />   {/* globaler Cursor für alle Seiten */}
+</LanguageProvider>
+```
+
+Den Cursor-Dot-Code aus `HomeView` und `homeInteractions.ts` entfernen, um Doppelinitialisierung zu vermeiden.
+
+---
+
+## 12. Projektbilder zu gross / falsches Layout auf Detailseiten
+
+**Problem:** Das Projekt-Hero-Cover (`proj-cover`) war als `<img width="100%">` implementiert. Das alte Portfolio verwendet dort einen **16/10-Aspect-Ratio-Container mit `background-image: cover`**. Das Resultat: Bilder wurden unkontrolliert gross und das Layout stimmte nicht.
+
+**Lösung:** `ProjectView.tsx` komplett neu schreiben — Cover als CSS-Background:
+
+```tsx
+<div
+  className="proj-cover"
+  style={{ background: `linear-gradient(...), url(${imgUrl}) center/cover` }}
+/>
+```
+
+Die alte CSS-Regel `.proj-cover { aspect-ratio: 16/10; }` übernimmt dann die korrekte Darstellung. Ausserdem darf kein Override-CSS-Block das `.proj-cover`-Verhalten nachträglich überschreiben — solche Blöcke aus `globals.css` entfernen.
+
+---
+
+## 13. Studio zeigt neue Schema-Typen nicht (ChunkLoadError)
+
+**Problem:** Nach Schema-Änderungen (neue Block-Typen in `objects.ts`, `index.ts`, `project.ts`) erscheint im Browser beim Öffnen von `localhost:3001/studio` ein roter Fehler:
+```
+Runtime ChunkLoadError
+Loading chunk _app-pages-browser_node_modules_next-sanity_dist__chunks-es_NextStudio_js failed.
+```
+Ursache: Das eingebettete Sanity Studio ist ein Next.js-Chunk. Der laufende Dev-Server hat die alten Chunks gecacht — nach einer Schema-Änderung muss er neu starten, damit Next.js die neuen Dateien compiliert.
+
+**Lösung:** Dev-Server neu starten:
+```bash
+# Ctrl+C (laufenden Server stoppen)
+npm run dev
+```
+Danach `localhost:3001/studio` (oder welcher Port auch immer Next.js belegt) neu laden.
+
+---
+
+## 14. `sanity dev` (Port 3333) lädt `.env.local` nicht
+
+**Problem:** `npx sanity dev` startet den Sanity Studio standalone auf Port 3333. Die `sanity.cli.ts` liest Umgebungsvariablen via `process.env.NEXT_PUBLIC_SANITY_*` — diese sind aber nur in `.env.local` definiert, welches **nur Next.js automatisch lädt**. Beim direkten `sanity dev`-Aufruf erscheint deshalb:
+```
+Uncaught error: Missing environment variable: NEXT_PUBLIC_SANITY_DATASET
+```
+
+**Lösung:** Das eingebettete Studio unter `localhost:[PORT]/studio` verwenden statt des standalone Servers. Das Next.js-Dev-Server lädt `.env.local` korrekt. `npx sanity dev` nur einsetzen, wenn die Env-Variablen explizit übergeben werden:
+```bash
+NEXT_PUBLIC_SANITY_PROJECT_ID=xxx NEXT_PUBLIC_SANITY_DATASET=production npx sanity dev
+```
+
+**Merke:** Immer das Next.js-Studio (`/studio`-Route) bevorzugen — dort stimmen Schema und Env-Variablen immer überein.

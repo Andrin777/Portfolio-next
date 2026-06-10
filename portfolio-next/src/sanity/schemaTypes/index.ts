@@ -7,8 +7,10 @@ import {
   journeyEntry,
   mediaEmbed,
   mediaGallery,
+  mediaSector,
   mediaVideo,
   nowCard,
+  sectorVideo,
   socialLink,
 } from "./objects";
 import { postType } from "./documents/post";
@@ -25,9 +27,11 @@ export const schemaTypes: SchemaTypeDefinition[] = [
   // Reusable objects
   highlight,
   galleryImage,
+  sectorVideo,
   mediaGallery,
   mediaVideo,
   mediaEmbed,
+  mediaSector,
   journeyEntry,
   nowCard,
   socialLink,

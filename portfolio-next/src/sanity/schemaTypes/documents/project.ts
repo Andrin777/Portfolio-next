@@ -135,6 +135,7 @@ export const project = defineType({
       description:
         "Build the project page body: galleries, videos and embeds in any order.",
       of: [
+        defineArrayMember({ type: "mediaSector" }),
         defineArrayMember({ type: "mediaGallery" }),
         defineArrayMember({ type: "mediaVideo" }),
         defineArrayMember({ type: "mediaEmbed" }),

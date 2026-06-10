@@ -11,11 +11,33 @@ const imageFields = `{
 
 const galleryImageFields = `{
   fit,
+  isWide,
   caption ${localeFields},
   "image": image ${imageFields}
 }`;
 
+const sectorMediaFields = `{
+  _type, _key, isWide,
+  _type == "galleryImage" => {
+    fit,
+    caption ${localeFields},
+    "image": image ${imageFields}
+  },
+  _type == "sectorVideo" => {
+    caption ${localeFields},
+    "videoUrl": video.asset->url,
+    "poster": poster ${imageFields}
+  }
+}`;
+
 const mediaBlockFields = `
+  _type == "mediaSector" => {
+    _type, _key,
+    eyebrow ${localeFields},
+    heading ${localeFields},
+    brief ${localeFields},
+    media[] ${sectorMediaFields}
+  },
   _type == "mediaGallery" => {
     _type, _key,
     eyebrow ${localeFields},

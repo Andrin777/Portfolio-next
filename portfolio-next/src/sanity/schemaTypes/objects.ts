@@ -42,10 +42,52 @@ export const galleryImage = defineType({
       initialValue: "cover",
     }),
     defineField({ name: "caption", title: "Caption", type: "localeString" }),
+    defineField({
+      name: "isWide",
+      title: "Full width in sector grid",
+      type: "boolean",
+      description:
+        "When used inside a Media sector, span both columns. (Ignored in a plain gallery.) Leave off to let the first item span automatically.",
+      initialValue: false,
+    }),
   ],
   preview: {
     select: { media: "image", subtitle: "fit" },
     prepare: ({ media, subtitle }) => ({ title: "Image", subtitle, media }),
+  },
+});
+
+/* ───────────────────────── Sector video item ────────────────────────── */
+/** A single video shown inside a Media sector's media grid. */
+export const sectorVideo = defineType({
+  name: "sectorVideo",
+  title: "Video",
+  type: "object",
+  fields: [
+    defineField({
+      name: "video",
+      title: "Video file",
+      type: "file",
+      options: { accept: "video/*" },
+    }),
+    defineField({
+      name: "poster",
+      title: "Poster image",
+      type: "image",
+      options: { hotspot: true },
+    }),
+    defineField({ name: "caption", title: "Caption", type: "localeString" }),
+    defineField({
+      name: "isWide",
+      title: "Full width in sector grid",
+      type: "boolean",
+      description: "Span both columns of the sector grid.",
+      initialValue: false,
+    }),
+  ],
+  preview: {
+    select: { media: "poster", subtitle: "caption.en" },
+    prepare: ({ media, subtitle }) => ({ title: "Video", subtitle, media }),
   },
 });
 
@@ -156,6 +198,40 @@ export const mediaEmbed = defineType({
   preview: {
     select: { title: "heading.en", subtitle: "url" },
     prepare: ({ title, subtitle }) => ({ title: title || "Embed", subtitle }),
+  },
+});
+
+/** Editorial sector: a text head (left column) beside a media grid (right). */
+export const mediaSector = defineType({
+  name: "mediaSector",
+  title: "Media sector",
+  type: "object",
+  description:
+    "Two-column block: eyebrow + title + brief on the left, a grid of images/videos on the right.",
+  fields: [
+    defineField({ name: "eyebrow", title: "Eyebrow (small label)", type: "localeString" }),
+    defineField({ name: "heading", title: "Title", type: "localeString" }),
+    defineField({ name: "brief", title: "Brief", type: "localeText" }),
+    defineField({
+      name: "media",
+      title: "Media (images & videos)",
+      type: "array",
+      description:
+        "Shown as a grid. The first item spans full width unless you mark others as full width.",
+      of: [
+        defineArrayMember({ type: "galleryImage" }),
+        defineArrayMember({ type: "sectorVideo" }),
+      ],
+      options: { layout: "grid" },
+    }),
+  ],
+  preview: {
+    select: { title: "heading.en", eyebrow: "eyebrow.en", media: "media" },
+    prepare: ({ title, eyebrow, media }) => ({
+      title: title || eyebrow || "Media sector",
+      subtitle: `${media?.length || 0} item(s)`,
+      media: media?.[0]?.image || media?.[0]?.poster,
+    }),
   },
 });
 
