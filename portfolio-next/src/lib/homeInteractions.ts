@@ -57,7 +57,8 @@ export function initHomeInteractions(): Cleanup {
   const isTouch =
     hasTouchSupport &&
     window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-  if (!isTouch) document.body.classList.add("has-hover-cursor");
+  // The custom cursor dot is managed globally by <CursorDot/> in the layout
+  // (it must exist on every page), so it is intentionally not handled here.
 
   /* ======================================================================
      Headline split — wrap each char in a .char span, grouped by .word
@@ -371,42 +372,6 @@ export function initHomeInteractions(): Cleanup {
      Pointer-driven flourishes — skip entirely on touch devices
      ====================================================================== */
   if (!isTouch) {
-    // Custom cursor dot
-    (function cursorDot() {
-      const dot = $("#cursorDot");
-      if (!dot) return;
-      let dx = 0,
-        dy = 0,
-        dcx = 0,
-        dcy = 0,
-        dotRaf = 0;
-      function tick() {
-        dcx += (dx - dcx) * 0.25;
-        dcy += (dy - dcy) * 0.25;
-        dot!.style.transform = `translate(${dcx}px, ${dcy}px) translate(-50%, -50%)`;
-        if (Math.abs(dx - dcx) > 0.1 || Math.abs(dy - dcy) > 0.1)
-          dotRaf = requestAnimationFrame(tick);
-        else dotRaf = 0;
-      }
-      on(document, "mousemove", (e) => {
-        const m = e as MouseEvent;
-        dx = m.clientX;
-        dy = m.clientY;
-        if (!dot.classList.contains("is-active")) dot.classList.add("is-active");
-        if (!dotRaf) dotRaf = requestAnimationFrame(tick);
-      });
-      on(document, "mouseleave", () => dot.classList.remove("is-active"));
-      const hoverSelector =
-        "a, button, .proj-card, .proj-play-card, .proj-media-nav, .stack-card, .timeline-btn, .cap-card, .now-card, .spiral-card";
-      on(document, "mouseover", (e) => {
-        if ((e.target as Element).closest(hoverSelector)) dot.classList.add("is-hovering");
-      });
-      on(document, "mouseout", (e) => {
-        if ((e.target as Element).closest(hoverSelector))
-          dot.classList.remove("is-hovering");
-      });
-    })();
-
     if (!reduceMotion) {
       // Aurora spotlight following the cursor across the hero band
       (function aurora() {
@@ -799,6 +764,5 @@ export function initHomeInteractions(): Cleanup {
         /* ignore */
       }
     });
-    document.body.classList.remove("has-hover-cursor");
   };
 }

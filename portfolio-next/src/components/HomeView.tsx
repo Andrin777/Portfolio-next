@@ -153,11 +153,6 @@ export function HomeView({
             >
               {theme === "dark" ? <SunIcon /> : <MoonIcon />}
             </button>
-
-            <a className="btn btn-primary btn-sm" href="#contact">
-              <span>{t("Let's talk", "Sprechen wir")}</span>
-              <span>→</span>
-            </a>
           </div>
 
           <div
@@ -203,15 +198,6 @@ export function HomeView({
             onClick={() => setMenuOpen(false)}
           >
             {t("Contact", "Kontakt")}
-          </a>
-          <a
-            className="btn btn-primary btn-sm"
-            href="#contact"
-            style={{ width: "fit-content" }}
-            onClick={() => setMenuOpen(false)}
-          >
-            <span>{t("Let's talk", "Sprechen wir")}</span>
-            <span>→</span>
           </a>
         </div>
       </nav>
@@ -742,9 +728,6 @@ export function HomeView({
           </p>
         </div>
       </footer>
-
-      {/* custom cursor dot — desktop only via CSS media query */}
-      <div className="cursor-dot" id="cursorDot" aria-hidden="true" />
     </div>
   );
 }

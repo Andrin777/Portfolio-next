@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
+import { CursorDot } from "@/components/CursorDot";
 import { LanguageProvider } from "@/lib/locale";
 import { sanityFetch } from "@/sanity/fetch";
 import { siteSettingsQuery } from "@/sanity/queries";
@@ -28,7 +29,10 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="dark" data-lang="en" suppressHydrationWarning>
       <body className={inter.className} data-theme="dark" data-lang="en" suppressHydrationWarning>
-        <LanguageProvider defaultLang="en">{children}</LanguageProvider>
+        <LanguageProvider defaultLang="en">
+          {children}
+          <CursorDot />
+        </LanguageProvider>
       </body>
     </html>
   );
