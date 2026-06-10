@@ -131,3 +131,13 @@ export type StackItem = {
   level?: number;
   description?: Locale;
 };
+
+export type ToolReceipt = {
+  _id: string;
+  key: string;
+  color?: string;
+  label?: Locale;
+  tools?: string[];
+  evidence?: Locale;
+  projects?: { slug: string; title: string }[];
+};

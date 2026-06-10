@@ -3215,6 +3215,7 @@ body.media-lightbox-open { overflow: hidden; }
   font-weight: 650;
   line-height: 1.15;
   text-align: left;
+  text-decoration: none;
   transition: border-color .2s ease, background-color .2s ease, transform .2s ease;
 }
 .tool-project::before {

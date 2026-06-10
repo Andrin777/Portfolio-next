@@ -11,18 +11,22 @@ import type {
   ProjectListItem,
   SiteSettings,
   StackItem,
+  ToolReceipt,
 } from "@/lib/types";
 
 type WorkMode = "spiral" | "list";
+type StackView = "receipts" | "cards";
 
 export function HomeView({
   settings,
   projects,
   stack,
+  toolReceipts,
 }: {
   settings: SiteSettings;
   projects: ProjectListItem[];
   stack: StackItem[];
+  toolReceipts: ToolReceipt[];
 }) {
   const { lang, toggle } = useLang();
   const t = (en: string, de: string) => (lang === "de" ? de : en);
@@ -36,6 +40,7 @@ export function HomeView({
   const [activeYear, setActiveYear] = useState("all");
   const [activeTopic, setActiveTopic] = useState("all");
   const [openTimeline, setOpenTimeline] = useState(0);
+  const [stackView, setStackView] = useState<StackView>("receipts");
 
   /* ── Theme: restore + mirror to <html>/<body> ──────────────────────── */
   useEffect(() => {
@@ -543,7 +548,7 @@ export function HomeView({
       </section>
 
       {/* ── TECH STACK ────────────────────────────────────────────────── */}
-      {stack.length > 0 && (
+      {(stack.length > 0 || toolReceipts.length > 0) && (
         <section id="stack" className="block px">
           <div className="stack-head">
             <div>
@@ -559,58 +564,118 @@ export function HomeView({
                   "Die Tools, zu denen ich in Interaction Design, Creative Code und Research greife.",
                 )}
               </p>
+              <div className="stack-view-switch" role="tablist" aria-label="Stack view">
+                <button
+                  className={`stack-view-btn${stackView === "receipts" ? " is-active" : ""}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={stackView === "receipts"}
+                  onClick={() => setStackView("receipts")}
+                >
+                  {t("Receipts", "Receipts")}
+                </button>
+                <button
+                  className={`stack-view-btn${stackView === "cards" ? " is-active" : ""}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={stackView === "cards"}
+                  onClick={() => setStackView("cards")}
+                >
+                  {t("Tiles", "Kacheln")}
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="stack-grid">
-            {stack
-              .slice()
-              .sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
-              .map((s) => (
-                <div
-                  className="stack-card"
-                  key={s._id}
-                  data-id={s.key}
-                  data-cat={s.category}
-                  style={{ ["--tool-color" as string]: s.color || "#888" }}
+          {stackView === "receipts" && toolReceipts.length > 0 && (
+            <div className="tool-receipts">
+              {toolReceipts.map((receipt, i) => (
+                <article
+                  key={receipt._id}
+                  className="tool-receipt-row"
+                  style={{ ["--receipt-color" as string]: receipt.color || "var(--accent)" }}
                 >
-                  {s.category && (
-                    <span className="stack-cat">
-                      {s.category.toUpperCase()}
-                    </span>
-                  )}
-                  <div
-                    className="stack-icon"
-                    dangerouslySetInnerHTML={{ __html: s.icon || s.name[0] }}
-                  />
-                  <p className="stack-name">{s.name}</p>
-                  {s.years != null && (
-                    <p className="stack-meta">
-                      {s.years}{" "}
-                      {lang === "de"
-                        ? s.years === 1
-                          ? "Jahr"
-                          : "Jahre"
-                        : s.years === 1
-                          ? "year"
-                          : "years"}
-                    </p>
-                  )}
-                  <div
-                    className="stack-level"
-                    aria-label={`Skill level ${s.level ?? 0} of 5`}
-                  >
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <span
-                        key={i}
-                        className={i < (s.level ?? 0) ? "on" : ""}
-                      />
-                    ))}
+                  <div className="tool-receipt-index">
+                    {String(i + 1).padStart(2, "0")}
                   </div>
-                  <p className="stack-desc">{L(s.description)}</p>
-                </div>
+                  <div>
+                    <h3 className="tool-receipt-title">{L(receipt.label)}</h3>
+                    <div className="tool-receipt-tools">
+                      {(receipt.tools ?? []).map((tool) => (
+                        <span key={tool} className="tool-chip">{tool}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="tool-receipt-evidence">{L(receipt.evidence)}</p>
+                    <div className="tool-receipt-projects">
+                      {(receipt.projects ?? []).map((p) => (
+                        <Link
+                          key={p.slug}
+                          href={`/work/${p.slug}`}
+                          className="tool-project"
+                        >
+                          {p.title}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                </article>
               ))}
-          </div>
+            </div>
+          )}
+
+          {stackView === "cards" && stack.length > 0 && (
+            <div className="stack-grid">
+              {stack
+                .slice()
+                .sort((a, b) => (b.level ?? 0) - (a.level ?? 0))
+                .map((s) => (
+                  <div
+                    className="stack-card"
+                    key={s._id}
+                    data-id={s.key}
+                    data-cat={s.category}
+                    style={{ ["--tool-color" as string]: s.color || "#888" }}
+                  >
+                    {s.category && (
+                      <span className="stack-cat">
+                        {s.category.toUpperCase()}
+                      </span>
+                    )}
+                    <div
+                      className="stack-icon"
+                      dangerouslySetInnerHTML={{ __html: s.icon || s.name[0] }}
+                    />
+                    <p className="stack-name">{s.name}</p>
+                    {s.years != null && (
+                      <p className="stack-meta">
+                        {s.years}{" "}
+                        {lang === "de"
+                          ? s.years === 1
+                            ? "Jahr"
+                            : "Jahre"
+                          : s.years === 1
+                            ? "year"
+                            : "years"}
+                      </p>
+                    )}
+                    <div
+                      className="stack-level"
+                      aria-label={`Skill level ${s.level ?? 0} of 5`}
+                    >
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <span
+                          key={i}
+                          className={i < (s.level ?? 0) ? "on" : ""}
+                        />
+                      ))}
+                    </div>
+                    <p className="stack-desc">{L(s.description)}</p>
+                  </div>
+                ))}
+            </div>
+          )}
         </section>
       )}
 
