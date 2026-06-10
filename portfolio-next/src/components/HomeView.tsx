@@ -68,11 +68,6 @@ export function HomeView({
     }
   }, [theme]);
 
-  /* ── Default to list view on small screens ─────────────────────────── */
-  useEffect(() => {
-    if (window.matchMedia("(max-width: 640px)").matches) setWorkMode("list");
-  }, []);
-
   /* ── Wire up the ported imperative interactions once ───────────────── */
   useEffect(() => {
     const cleanup = initHomeInteractions();
