@@ -79,6 +79,18 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
         </div>
       </section>
 
+      {/* ── About ─────────────────────────────────────────────────────── */}
+      {project.intro && (
+        <section className="proj-about px">
+          <div className="proj-about-grid">
+            <p className="eyebrow">
+              {t("ABOUT THIS PROJECT", "ÜBER DIESES PROJEKT")}
+            </p>
+            <p className="body">{loc(project.intro, lang)}</p>
+          </div>
+        </section>
+      )}
+
       {/* ── Cover ─────────────────────────────────────────────────────── */}
       <section className="px">
         <div
@@ -142,18 +154,6 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
               allow="fullscreen"
               title={`${project.title} brochure`}
             />
-          </div>
-        </section>
-      )}
-
-      {/* ── About ─────────────────────────────────────────────────────── */}
-      {project.intro && (
-        <section className="proj-about px">
-          <div className="proj-about-grid">
-            <p className="eyebrow">
-              {t("ABOUT THIS PROJECT", "ÜBER DIESES PROJEKT")}
-            </p>
-            <p className="body">{loc(project.intro, lang)}</p>
           </div>
         </section>
       )}
