@@ -28,6 +28,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-theme="dark" data-lang="en" suppressHydrationWarning>
+      <head>
+        <link
+          rel="preload"
+          href="/fonts/schriftli.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body className={inter.className} data-theme="dark" data-lang="en" suppressHydrationWarning>
         <LanguageProvider defaultLang="en">
           <a className="skip-link" href="#main">
