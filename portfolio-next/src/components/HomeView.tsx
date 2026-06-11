@@ -17,6 +17,22 @@ import type {
 type WorkMode = "spiral" | "list";
 type StackView = "receipts" | "cards";
 
+/* Art-directed hero tagline with explicit line breaks (see the design / hero
+   screenshot). "\n" is turned into a hard break by splitHeadline(). These also
+   serve as the fallback when the CMS has no hero title. */
+const HERO_TITLE_EN =
+  "Designing thoughtful,\nplayful systems for\nhumans, machines\n& everything\nin between.";
+const HERO_TITLE_DE =
+  "Durchdachte, verspielte\nSysteme für Menschen,\nMaschinen & alles\ndazwischen.";
+
+/* The hero title is CMS-driven. When the stored copy matches the designed
+   tagline (ignoring whitespace), render the version with art-directed line
+   breaks; if the copy is later changed in Sanity, it just wraps naturally. */
+function withHeroBreaks(text: string, designed: string): string {
+  const norm = (s: string) => s.replace(/\s+/g, " ").trim();
+  return norm(text) === norm(designed) ? designed : text;
+}
+
 export function HomeView({
   settings,
   projects,
@@ -256,12 +272,10 @@ export function HomeView({
                 across a mid-animation language switch; CSS hides the inactive
                 one via [data-lang]. */}
             <h1 id="heroTitle" data-en>
-              {settings?.heroTitle?.en ||
-                "Designing thoughtful, playful systems for humans, machines & everything in between."}
+              {withHeroBreaks(settings?.heroTitle?.en || HERO_TITLE_EN, HERO_TITLE_EN)}
             </h1>
             <h1 id="heroTitleDe" data-de>
-              {settings?.heroTitle?.de ||
-                "Durchdachte, verspielte Systeme für Menschen, Maschinen & alles dazwischen."}
+              {withHeroBreaks(settings?.heroTitle?.de || HERO_TITLE_DE, HERO_TITLE_DE)}
             </h1>
 
             <p className="lead">
@@ -275,7 +289,7 @@ export function HomeView({
             <div className="hero-ctas">
               <a className="btn btn-primary magnetic" href="#work" data-magnetic>
                 <span>{t("View selected work", "Ausgewählte Arbeiten")}</span>
-                <span>→</span>
+                <span className="btn-arrow">→</span>
               </a>
               <a
                 className="btn btn-ghost magnetic"
@@ -283,7 +297,7 @@ export function HomeView({
                 data-magnetic
               >
                 <span>{t("Drop me a line", "Schreib mir")}</span>
-                <span>↗</span>
+                <span className="btn-arrow btn-arrow--diag">↗</span>
               </a>
             </div>
           </div>

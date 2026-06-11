@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 import { MediaBlocks } from "@/components/MediaBlocks";
+import { ReactiveMedia } from "@/components/ReactiveMedia";
 import { imgUrl } from "@/lib/img";
 import { loc, useLang } from "@/lib/locale";
 import type { ProjectDetail } from "@/lib/types";
@@ -14,6 +15,9 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
   const accent = project.accent || "var(--accent)";
   const num = String(project.order ?? "").padStart(2, "0");
   const tag = loc(project.tag, lang);
+  // Reactive Signs ships a bespoke, camera-themed media layout (driven by the
+  // dark `data-active-project="reactive-signs"` styles in globals.css).
+  const isReactive = project.slug === "reactive-signs";
 
   // Mirror the legacy `data-active-project` flag so per-project CSS tweaks
   // (e.g. Dynamik's near-black accent legibility fix) keep working.
@@ -109,8 +113,11 @@ export function ProjectView({ project }: { project: ProjectDetail }) {
         </div>
       </section>
 
+      {/* ── Reactive Signs bespoke media ──────────────────────────────── */}
+      {isReactive && <ReactiveMedia blocks={project.mediaBlocks} />}
+
       {/* ── Media ─────────────────────────────────────────────────────── */}
-      {hasMedia && (
+      {hasMedia && !isReactive && (
         <section className="proj-media px">
           {hasMediaHead && (
             <div className="proj-media-head">

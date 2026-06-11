@@ -3,7 +3,10 @@
   font-family: "Schriftli";
   src: url("/fonts/schriftli.woff2") format("woff2"),
        url("/fonts/schriftli.ttf") format("truetype");
-  font-weight: 600;
+  /* One physical file (Bricolage Grotesque SemiBold) covers the whole range so
+     headings (700) and the canvas wordmark (800) all resolve to it instead of
+     synthesizing faux-bold or falling back to Inter. */
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
@@ -279,6 +282,11 @@ body.spiral-stage-active .nav {
 .btn-ghost { background: transparent; }
 .btn-ghost:hover { background: var(--bg-elev); }
 
+/* Animated arrows inside hero CTAs — same nudge as the email button */
+.btn-arrow { display: inline-block; transition: transform .3s ease; }
+.btn:hover .btn-arrow { transform: translateX(4px); }
+.btn:hover .btn-arrow--diag { transform: translate(4px, -4px); }
+
 .btn-sm { padding: 10px 18px; font-size: 14px; gap: 6px; }
 
 .menu-mobile {
@@ -342,6 +350,13 @@ body.spiral-stage-active .nav {
 }
 @media (max-width: 639px) {
   .hero h1 { font-size: 42px; }
+}
+/* Hard line breaks in the hero title (inserted from "\n" in the headline text
+   by splitHeadline). Suppressed on small screens so the title wraps naturally
+   and never overflows; enabled from tablet up to match the intended layout. */
+.hero h1 br.hero-br { display: none; }
+@media (min-width: 768px) {
+  .hero h1 br.hero-br { display: revert; }
 }
 .hero p.lead {
   margin: 24px 0 0;
@@ -1031,6 +1046,7 @@ h2.section-title {
   position: relative;
   height: 320vh;
   width: 100vw;
+  margin-top: -30vh;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
 }
@@ -1116,7 +1132,7 @@ h2.section-title {
   text-shadow: 0 1px 4px rgba(0,0,0,.6);
 }
 @media (max-width: 768px) {
-  .work-spiral-scroll { height: 260vh; }
+  .work-spiral-scroll { height: 260vh; margin-top: -16vh; }
   .work-spiral-stage {
     perspective: 920px;
     perspective-origin: 50% 45%;
@@ -2364,7 +2380,7 @@ body[data-active-project="drohnenfliegen"] .proj-back-row {
   padding-top: clamp(48px, 7vw, 96px);
   padding-bottom: 88px;
 }
-body[data-active-project="spotlight"] {
+body[data-active-project="reactive-signs"] {
   --reactive-page-bg: #080808;
   --reactive-page-bg-end: #11100f;
   --reactive-text: #f6f3ed;
@@ -2381,7 +2397,7 @@ body[data-active-project="spotlight"] {
   --reactive-glow-secondary: rgba(255,255,255,.08);
   --reactive-rule: rgba(255,255,255,.12);
 }
-body[data-theme="light"][data-active-project="spotlight"] {
+body[data-theme="light"][data-active-project="reactive-signs"] {
   --reactive-page-bg: #fbfbfc;
   --reactive-page-bg-end: #f0f0f4;
   --reactive-text: #0b0b0f;
@@ -2398,27 +2414,27 @@ body[data-theme="light"][data-active-project="spotlight"] {
   --reactive-glow-secondary: rgba(255,45,61,.08);
   --reactive-rule: rgba(11,11,15,.12);
 }
-body[data-active-project="spotlight"] .project-page {
+body[data-active-project="reactive-signs"] .project-page {
   max-width: none;
   width: 100%;
   color: var(--reactive-text);
   background: var(--reactive-page-bg);
 }
-body[data-active-project="spotlight"] .project-page > .px,
-body[data-active-project="spotlight"] .project-page > section.px {
+body[data-active-project="reactive-signs"] .project-page > .px,
+body[data-active-project="reactive-signs"] .project-page > section.px {
   max-width: var(--maxw);
   margin-left: auto;
   margin-right: auto;
 }
-body[data-active-project="spotlight"] .proj-back,
-body[data-active-project="spotlight"] .proj-hero .lead,
-body[data-active-project="spotlight"] .proj-meta,
-body[data-active-project="spotlight"] .proj-about p.body,
-body[data-active-project="spotlight"] .proj-hl-card p,
-body[data-active-project="spotlight"] .proj-back-row .more {
+body[data-active-project="reactive-signs"] .proj-back,
+body[data-active-project="reactive-signs"] .proj-hero .lead,
+body[data-active-project="reactive-signs"] .proj-meta,
+body[data-active-project="reactive-signs"] .proj-about p.body,
+body[data-active-project="reactive-signs"] .proj-hl-card p,
+body[data-active-project="reactive-signs"] .proj-back-row .more {
   color: var(--reactive-muted);
 }
-body[data-active-project="spotlight"] .proj-hero {
+body[data-active-project="reactive-signs"] .proj-hero {
   position: relative;
   isolation: isolate;
   min-height: min(72svh, 780px);
@@ -2428,7 +2444,7 @@ body[data-active-project="spotlight"] .proj-hero {
   padding-top: clamp(72px, 10vw, 132px);
   padding-bottom: clamp(56px, 7vw, 96px);
 }
-body[data-active-project="spotlight"] .proj-hero::before {
+body[data-active-project="reactive-signs"] .proj-hero::before {
   content: "";
   position: absolute;
   inset: 0 50%;
@@ -2440,27 +2456,27 @@ body[data-active-project="spotlight"] .proj-hero::before {
     radial-gradient(circle at 22% 78%, var(--reactive-glow-secondary), transparent 40%),
     linear-gradient(180deg, var(--reactive-page-bg) 0%, var(--reactive-page-bg-end) 100%);
 }
-body[data-active-project="spotlight"] .proj-hero h1 {
+body[data-active-project="reactive-signs"] .proj-hero h1 {
   max-width: 820px;
   text-shadow: var(--reactive-title-shadow);
 }
-body[data-active-project="spotlight"] .proj-cover { display: none; }
-body[data-active-project="spotlight"] .proj-reactive { display: block; }
-body[data-active-project="spotlight"] #projReactiveSection {
+body[data-active-project="reactive-signs"] .proj-cover { display: none; }
+body[data-active-project="reactive-signs"] .proj-reactive { display: block; }
+body[data-active-project="reactive-signs"] #projReactiveSection {
   max-width: var(--maxw);
 }
-body[data-active-project="spotlight"] .proj-about,
-body[data-active-project="spotlight"] .proj-highlights {
+body[data-active-project="reactive-signs"] .proj-about,
+body[data-active-project="reactive-signs"] .proj-highlights {
   display: none;
 }
-body[data-active-project="spotlight"] .proj-hl-card {
+body[data-active-project="reactive-signs"] .proj-hl-card {
   background: var(--reactive-card);
   border-color: var(--reactive-rule);
   border-top-width: 1px;
   box-shadow: var(--reactive-card-shadow);
 }
-body[data-active-project="spotlight"] .proj-hl-card h3 { color: var(--reactive-text); }
-body[data-active-project="spotlight"] .proj-back-row {
+body[data-active-project="reactive-signs"] .proj-hl-card h3 { color: var(--reactive-text); }
+body[data-active-project="reactive-signs"] .proj-back-row {
   border-top-color: var(--reactive-border);
 }
 

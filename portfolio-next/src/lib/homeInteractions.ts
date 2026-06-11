@@ -67,18 +67,30 @@ export function initHomeInteractions(): Cleanup {
     if (!el || el.dataset.split === "1") return;
     const text = el.textContent || "";
     el.textContent = "";
-    const words = text.split(" ");
-    words.forEach((word, i) => {
-      const wordSpan = document.createElement("span");
-      wordSpan.className = "word";
-      for (const ch of word) {
-        const span = document.createElement("span");
-        span.className = "char";
-        span.textContent = ch;
-        wordSpan.appendChild(span);
+    // Honor explicit "\n" in the headline as hard line breaks (see hero title
+    // defaults). CSS only lets them break above a breakpoint, so mobile still
+    // wraps naturally — see ".hero h1 br.hero-br".
+    const lines = text.split("\n");
+    lines.forEach((line, li) => {
+      const words = line.trim().split(" ");
+      words.forEach((word, i) => {
+        if (!word) return;
+        const wordSpan = document.createElement("span");
+        wordSpan.className = "word";
+        for (const ch of word) {
+          const span = document.createElement("span");
+          span.className = "char";
+          span.textContent = ch;
+          wordSpan.appendChild(span);
+        }
+        el.appendChild(wordSpan);
+        if (i < words.length - 1) el.appendChild(document.createTextNode(" "));
+      });
+      if (li < lines.length - 1) {
+        const br = document.createElement("br");
+        br.className = "hero-br";
+        el.appendChild(br);
       }
-      el.appendChild(wordSpan);
-      if (i < words.length - 1) el.appendChild(document.createTextNode(" "));
     });
     el.dataset.split = "1";
   }

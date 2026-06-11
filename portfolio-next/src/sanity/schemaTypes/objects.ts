@@ -227,6 +227,14 @@ export const mediaSector = defineType({
     defineField({ name: "heading", title: "Title", type: "localeString" }),
     defineField({ name: "brief", title: "Brief", type: "localeText" }),
     defineField({
+      name: "details",
+      title: "Detail rows",
+      type: "array",
+      description:
+        "Optional short lines shown under the brief, each separated by a thin rule.",
+      of: [defineArrayMember({ type: "localeString" })],
+    }),
+    defineField({
       name: "media",
       title: "Media (images & videos)",
       type: "array",

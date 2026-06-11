@@ -39,6 +39,7 @@ const mediaBlockFields = `
     eyebrow ${localeFields},
     heading ${localeFields},
     brief ${localeFields},
+    details[] ${localeFields},
     media[] ${sectorMediaFields}
   },
   _type == "mediaGallery" => {

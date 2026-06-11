@@ -42,6 +42,7 @@ export type MediaBlock =
       eyebrow?: Locale;
       heading?: Locale;
       brief?: Locale;
+      details?: Locale[];
       media?: SectorMediaItem[];
     }
   | {
