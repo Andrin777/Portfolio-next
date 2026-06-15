@@ -131,7 +131,7 @@ NEXT_PUBLIC_SANITY_PROJECT_ID
 NEXT_PUBLIC_SANITY_DATASET
 ```
 
-Additionally, the `sanity.cli.ts` reads these variables at build time via `process.env.NEXT_PUBLIC_SANITY_*` — making sure the variable names are consistent across `sanity.config.ts`, `sanity.cli.ts` and the Netlify dashboard was a key part of getting the deployment to work correctly.
+Additionally, the `sanity.cli.ts` reads these variables at build time via `process.env.NEXT_PUBLIC_SANITY_*`, making sure the variable names are consistent across `sanity.config.ts`, `sanity.cli.ts` and the Netlify dashboard was a key part of getting the deployment to work correctly.
 
 ---
 
