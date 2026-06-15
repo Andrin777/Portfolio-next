@@ -1,8 +1,7 @@
 /* Custom title font: Schriftli (Bricolage Grotesque SemiBold) — embedded as base64 */
 @font-face {
   font-family: "Schriftli";
-  src: url("/fonts/schriftli.woff2") format("woff2"),
-       url("/fonts/schriftli.ttf") format("truetype");
+  src: url("/fonts/schriftli.woff2") format("woff2");
   /* One physical file (Bricolage Grotesque SemiBold) covers the whole range so
      headings (700) and the canvas wordmark (800) all resolve to it instead of
      synthesizing faux-bold or falling back to Inter. */
@@ -83,7 +82,7 @@ html, body {
   font-size: 16px;
   line-height: 1.5;
   transition: background-color .3s ease, color .3s ease;
-  overflow-x: clip;          /* clips 100vw effects without breaking sticky spiral cards */
+  overflow-x: clip;          /* clips 100vw full-bleed effects without creating a scroll container */
 }
 
 img { max-width: 100%; display: block; }
@@ -183,6 +182,7 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom: 1px solid var(--border);
   transition: transform .25s ease, opacity .25s ease, background-color .3s ease, border-color .3s ease;
 }
+/* reserved for spiral view – not yet ported to Next.js */
 body.spiral-stage-active .nav {
   opacity: 0;
   pointer-events: none;
@@ -992,6 +992,9 @@ h2.section-title {
   opacity: .9;
 }
 
+/* ==========================================================================
+   Spiral / scroll-scrub view — reserved, not yet ported to Next.js
+   ========================================================================== */
 #work.work-spiral {
   background: var(--bg);
   color: var(--text);
@@ -1160,6 +1163,7 @@ h2.section-title {
     opacity: 1 !important;
   }
 }
+/* end spiral / scroll-scrub reserved block */
 
 .show-more-row {
   margin-top: 48px;
